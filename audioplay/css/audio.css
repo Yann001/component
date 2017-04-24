@@ -1,0 +1,187 @@
+.Audioinfo {
+    display: none;
+    margin: 10px 16px;
+    background: #ffffff;
+    border: 1px solid #d9d9d9;
+    position: relative;
+    height: 40px;
+}
+.Audioinfo .audioProgress {
+    display: block;
+    width: 70%;
+    height: 40px;
+    position: absolute;
+    top: 0px;
+    left: 8px;
+    border: none;
+}
+.Audioinfo .audioProgress .progressTotal {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    width: 100%;
+    height: 2px;
+    background: #d9d9d9;
+    z-index: 9997;
+    transform: translate(0%, -50%);
+    -ms-transform: translate(0%, -50%);
+    -webkit-transform: translate(0%, -50%);
+}
+.Audioinfo .audioProgress .progressPlay {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0px;
+    width: 0%;
+    height: 2px;
+    background: #ff5c5c;
+    z-index: 9998;
+    transform: translate(0%, -50%);
+    -ms-transform: translate(0%, -50%);
+    -webkit-transform: translate(0%, -50%);
+}
+.Audioinfo .audioProgress .progressLump {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 50%;
+    background: #ff5c5c;
+    z-index: 9999;
+    transform: translate(0%, -50%);
+    -ms-transform: translate(0%, -50%);
+    -webkit-transform: translate(0%, -50%);
+}
+.Audioinfo .audioProgress .pause .audioIcoOut {
+    transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+}
+.Audioinfo .audioProgress .pause .audioIco {
+    position: relative;
+    top: 2px;
+    left: 12px;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    pointer-events: none;
+}
+.Audioinfo .audioProgress .pause .audioIco:before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    box-shadow: 0 0 32px #ffffff inset;
+    left: 0;
+    bottom: 0;
+}
+.Audioinfo .audioProgress .pause .audioIco:after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    right: 6px;
+    top: 6px;
+    border: 2px solid transparent;
+    box-shadow: inset 0 0 0 2px #ffffff, 0 0 0 2px #ffffff;
+}
+.Audioinfo .audioProgress .play .audioIcoOut {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+}
+.Audioinfo .audioProgress .play .audioIco {
+    position: relative;
+    left: 10px;
+    border-color: transparent transparent transparent #fff;
+    border-width: 6px 0 6px 10px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+.Audioinfo .audioProgress .load .audioIcoOut {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -webkit-animation: spinarrow 2s infinite linear;
+    animation: spinarrow 2s infinite linear;
+}
+ @-webkit-keyframes spinarrow {
+ 0% {
+ -webkit-transform: translate(-100%, 0%);
+}
+ 100% {
+ -webkit-transform: translate(100%, 0%);
+}
+}
+ @keyframes spinarrow {
+ 0% {
+ transform: translate(-100%, 0%);
+}
+ 100% {
+ transform: translate(100%, 0%);
+}
+}
+.Audioinfo .audioProgress .load .audioIco {
+    position: relative;
+    left: 2px;
+    width: 16px;
+    height: 4px;
+}
+.Audioinfo .audioProgress .load .audioIco:before {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    background: #ffffff;
+}
+.Audioinfo .audioProgress .load .audioIco:after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    border-radius: 50%;
+    width: 4px;
+    height: 4px;
+    background: #ffffff;
+}
+.Audioinfo .audioTime {
+    position: absolute;
+    right: 8px;
+    top: 0px;
+    display: block;
+    width: 30%;
+    height: 40px;
+    border: none;
+}
+.Audioinfo .audioTime .timeInfo {
+    position: absolute;
+    top: 50%;
+    right: 0px;
+    color: #666666;
+    font-size: 12px;
+    text-align: right;
+    height: 20px;
+    line-height: 20px;
+    transform: translate(0%, -50%);
+    -ms-transform: translate(0%, -50%);
+    -webkit-transform: translate(0%, -50%);
+}
