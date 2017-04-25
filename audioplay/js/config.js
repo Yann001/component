@@ -32,9 +32,6 @@ function TkAudio(src,audioBoxId) {
             html += '              </div>';
 
             Audioinfo.innerHTML = html;
-            //progressLump = document.getElementById("progressLump");
-            //progressLump.removeEventListener("click", audioClicks, false);
-            //progressLump.addEventListener("click", audioClicks, false);
         }
         progressLump = document.getElementById("progressLump");
         progressPlay = document.getElementById("progressPlay");
@@ -63,17 +60,17 @@ function TkAudio(src,audioBoxId) {
         currentTime = tkAudio.currentTime;
         //播放事件监听
         tkAudio.addEventListener("canplaythrough", canPlay, false);
-         function canPlay() {
+        function canPlay() {
             console.log("audio can play");
             progressLump.className = "progressLump play";
             //addListenTouch(); //歌曲加载之后才可以拖动进度条
             totalTime = tkAudio.duration;
-            timeChange(totalTime, "totalTime");
+            refreshTime(totalTime, "totalTime");
             tkAudio.removeEventListener("canplaythrough", canPlay, false);
-         }
+        }
         // yxy改
         // 监听 点击事件（切换状态）
-        progressLump.addEventListener("click", audioClicks, false);
+        progressLump.addEventListener("click", changeAudioState, false);
 
         //监听暂停
         tkAudio.addEventListener("pause", function () {
@@ -101,21 +98,21 @@ function TkAudio(src,audioBoxId) {
             progressLump.className = "progressLump play";
         }, false);
     }
-
-    createAudioDiv();
     initAudio();
 
     //开始音频播放
     function playAudio() {
-        if (tkAudio && progressLump) {
-            dragMove();
+        if (tkAudio && progressLump) {            
             progressLump.className = "progressLump pause";
             tkAudio.play();
+            moveScrollbar();
+            refreshTime(currentTime, "currentTime");
 
             clearInterval(setIntervalFun);
             setIntervalFun = setInterval(function () {
                 currentTime = tkAudio.currentTime;
-                dragMove();
+                moveScrollbar();
+                refreshTime(currentTime, "currentTime");
             }, 1000);
         }
     }
@@ -139,7 +136,7 @@ function TkAudio(src,audioBoxId) {
     }
 
     //点击暂停播放
-    function audioClicks() {
+    function changeAudioState() {
         if (progressLump.className.indexOf("play") > -1) {
             playAudio();//开始播放
         } else {
@@ -147,8 +144,8 @@ function TkAudio(src,audioBoxId) {
         }
     }
 
-    //滚动条滑动
-    function dragMove() {
+    // 移动滚动条滑动
+    function moveScrollbar() {
         var percent = "0";
         if (totalTime > 0) {
             percent = currentTime / totalTime;
@@ -157,11 +154,10 @@ function TkAudio(src,audioBoxId) {
         percent = percent * 100 + "%";
         progressLump.style.left = percent;
         progressPlay.style.width = percent;
-        timeChange(currentTime, "currentTime");
     }
 
-    //播放时间
-    function timeChange(time, timePlace) {
+    // 刷新播放时间
+    function refreshTime(time, timePlace) {
         var timePlace = document.getElementById(timePlace);
         time = Math.round(time);
         //分钟
@@ -182,8 +178,8 @@ function TkAudio(src,audioBoxId) {
 
     //----------------------------------
     //计算进度条宽度和显示时间状态
-    var audioPlayer = $("#audioInfo");
-    var audio = $("audio")[0];
+    var audioPlayer = $(".Audioinfo");
+    var audio = audioPlayer.find("audio")[0];
     //时间格式化
     function timeFormat(number) {
         var minute = parseInt(number / 60);
@@ -191,7 +187,7 @@ function TkAudio(src,audioBoxId) {
         minute = minute >= 10 ? minute : "0" + minute;
         second = second >= 10 ? second : "0" + second;
         return minute + ":" + second;
-    } 
+    }
 
     //获取总时长
     function TimeAll() {
@@ -199,8 +195,9 @@ function TkAudio(src,audioBoxId) {
     } 
 
     //实时更新播放器时间和进度条状态
-    function TimeSpan() {        
-        setInterval(function () {
+    function refreshState() {
+        clearInterval(setIntervalFun);        
+        var refreshStateInterval = setInterval(function () {
             var ProgressNow = 0;
             var currentTime = audio.currentTime;
             var totalTime = audio.duration;
@@ -230,68 +227,85 @@ function TkAudio(src,audioBoxId) {
         if(runnableTrackWidth <= 0) {          
             audio.currentTime = Math.round(RangeValue / 100 * audio.duration); 
             currentTime = audio.currentTime;
-            TimeSpan();
+            refreshState();
         }
         else if(runnableTrackWidth > 0 && runnableTrackWidth < 100) {
             audio.currentTime = Math.round(RangeValue / 100 * audio.duration); 
             currentTime = audio.currentTime;
-            TimeSpan();
+            refreshState();
         }
         else if(runnableTrackWidth >= 100){
             audio.currentTime = Math.round(RangeValue / 100 * audio.duration);   
             currentTime = audio.currentTime;
-            TimeSpan();         
+            refreshState();         
         }
     }
 
     //PC拖动进度条滑块
-    audioPlayer.find(".progressLump").mousedown(function(e){
-        //var isPause = audio.paused;
-        //pauseAudio();//暂停
-        setRangeBar(e);
-        e.stopPropagation(e);        
-        function relase(){
-            $(window).off("mousemove",setRangeBar);
-            $(window).off("mouseup",relase);
-        }
-        $(window).on("mousemove",setRangeBar);
-        $(window).on("mouseup",relase);
-        // if(!isPause) {
-        //     playAudio();//开始播放            
-        // }
-    })
+    // audioPlayer.find(".progressLump").mousedown(function(e){
+    //     //var isPause = audio.paused;
+    //     //pauseAudio();//暂停
+    //     setRangeBar(e);
+    //     e.stopPropagation(e);        
+    //     function relase(){
+    //         $(window).off("mousemove",setRangeBar);
+    //         $(window).off("mouseup",relase);
+    //     }
+    //     $(window).on("mousemove",setRangeBar);
+    //     $(window).on("mouseup",relase);
+    //     // if(!isPause) {
+    //     //     playAudio();//开始播放            
+    //     // }
+    // })
 
     // yxy改 添加
-    // var downFlag = false;
-    // audioPlayer.find(".audioProgress").mousemove(function(e) {
-    //     if(downFlag) {
-    //         var isPause = audio.paused;
-    //         pauseAudio();//暂停
-    //         setRangeBar(e);
-    //         if(!isPause){
-    //             playAudio();//开始播放
-    //         }         
-    //     }
-    // });
-    // audioPlayer.find(".audioProgress").mousedown(function() {
-    //     downFlag = true;
-    // });
-    // audioPlayer.mouseup(function() {
-    //     // 要不要为整个文档注册mouseup事件？？？
-    //     downFlag = false;
-    // });
+    var downFlag = false;
+    audioPlayer.find(".audioProgress").mousemove(function(e) {
+        if(downFlag) {
+            var isPause = audio.paused;
+            pauseAudio();//暂停
+            setRangeBar(e);
+            if(!isPause){
+                playAudio();//开始播放
+            }         
+        }
+    });
+    audioPlayer.find(".audioProgress").mousedown(function() {
+        downFlag = true;
+    });
+    audioPlayer.mouseup(function() {
+        // 要不要为整个文档注册mouseup事件？？？
+        downFlag = false;
+    });
 
     //移动端拖动进度条滑块
-    audioPlayer.find(".progressLump").on("touchstart",function(e) {
+    // audioPlayer.find(".progressLump").on("touchstart",function(e) {
 
-        //setRangeBar(e);
-        e.stopPropagation(e);
-        function relase(){
-            $(window).off("touchmove", setRangeBar);
-            $(window).off("touchend",relase);
+    //     //setRangeBar(e);
+    //     e.stopPropagation(e);
+    //     function relase(){
+    //         $(window).off("touchmove", setRangeBar);
+    //         $(window).off("touchend",relase);
+    //     }
+    //     $(window).on("touchmove",setRangeBar);
+    //     $(window).on("touchend",relase);
+    // });
+    //var downFlag = false;
+    audioPlayer.find(".audioProgress").on("touchmove", function(e) {
+        if(downFlag) {
+            //var isPause = audio.paused;
+            //pauseAudio();//暂停
+            setRangeBar(e);
+            // if(!isPause){
+            //     playAudio();//开始播放
+            // }         
         }
-        $(window).on("touchmove",setRangeBar);
-        $(window).on("touchend",relase);
+    });
+    audioPlayer.find(".audioProgress").on("touchstart", function() {
+        downFlag = true;
+    });
+    audioPlayer.on("touchend", function() {
+        downFlag = false;
     });
     // ------------------------------
 
