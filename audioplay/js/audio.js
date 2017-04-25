@@ -60,7 +60,7 @@ function TkAudio(src, audioBoxId) {
         audioSrc = src;
     }
     //audioSrc = "http://admintk.100xuexi.com/Plug/Ueditor/net/upload/2014-01-19/46431f4e-3ba2-47b7-9e44-5a4dce22b022.mp3";
-
+    //audioSrc1 = "http://admintk.100xuexi.com/Plug/Ueditor/net/upload/2016-10-14/604ca9ed-c0ce-4779-8196-120a5d5f4ac3.mp3"
     //创建音频DOM
     function createAudioDiv() {
         if (Audioinfo.childNodes.length <= 0) {
