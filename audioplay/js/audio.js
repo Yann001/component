@@ -199,6 +199,7 @@ function TkAudio(src, audioBoxId) {
     function stopAudio() {
         if (tkAudio) {
             tkAudio.pause();
+            tkAudio.currentTime = 0.0;
             Audioinfo.removeChild(tkAudio);
             clearInterval(setIntervalFun);
         }
