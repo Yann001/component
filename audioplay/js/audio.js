@@ -47,6 +47,7 @@ var H5LocalStorage = {
     }
 }
 //音频播放
+/*
 function TkAudio(src, audioBoxId) {    
     console.log("******************************")
     console.log("audioSrc: " + src);
@@ -389,3 +390,278 @@ function TkAudio(src, audioBoxId) {
         stopAudio: stopAudio,
     }
 }
+*/
+// --------------------------------
+//音频播放
+function TkAudio(src,audioBoxId) {
+    console.log("**********TkAudio is executed*************")
+    console.log("audioSrc: " + src);
+    console.log(audioBoxId);
+    //var Audioinfo = document.getElementById(audioBoxId);
+    var Audioinfo = $('#' + audioBoxId);
+    var btnControl = null, 
+        progress = null, 
+        progressInnerBar = null, 
+        tkAudio = null, 
+        audioSrc = null;
+    var audio = null,
+        totalTime = 0,
+        currentTime = 0;
+    var playTimer = null;
+    var audioHistory = window.localStorage.getItem('audioHistory') ? JSON.parse(window.localStorage.getItem('audioHistory')) : null;
+    if (src) {
+        audioSrc = src;
+    }
+    //audioSrc = "http://admintk.100xuexi.com/Plug/Ueditor/net/upload/2014-01-19/46431f4e-3ba2-47b7-9e44-5a4dce22b022.mp3";
+
+    //创建音频DOM
+    function createAudioDiv() {
+        if (Audioinfo.children().length <= 0) {
+            // var html = '         <div class="audioProgress">';
+            // html += '                 <div class="progressTotal"></div>';
+            // html += '                   <div class="progressPlay" id="progressPlay"></div>';
+            // html += '                 <div class="progressLump" id="progressLump">';
+            // html += '                     <div class="audioIcoOut">';
+            // html += '                         <div class="audioIco"></div>';
+            // html += '                     </div>';
+            // html += '                  </div>';
+            // html += '              </div>';
+            // html += '              <div class="audioTime">';
+            // html += '                  <div class="timeInfo" name="Tips">';
+            // html += '                      <span id="currentTime">00:00</span>/<span id="totalTime">00:00</span>';
+            // html += '                  </div>';
+            // html += '              </div>';
+            var html = '    <span class="M-Art-AudioPlayer2">';
+            html += '           <span class="BtnControl" id="btnControl">';
+            html += '               <span class="StatusIco"></span>';
+            html += '           </span>';
+            html += '           <span class="Progress" id="progress">';
+            html += '               <span class="ProgressBar">';
+            html += '                   <span class="ProgressInnerBar" id="progressInnerBar" style="width: 0%;">';
+            html += '                       <span class="ProgressPoint">';
+            html += '                           <span class="StatusIco"></span>';
+            html += '                       </span>';
+            html += '                   </span>';
+            html += '               </span>';
+            html += '           </span>';
+            html += '           <span class="Time">';
+            html += '               <span id="currentTime">00:00</span>/<span id="totalTime">00:00</span>';
+            html += '           </span>'
+            html += '       </span>'
+            Audioinfo.html(html);
+        }
+        btnControl = Audioinfo.find('#btnControl');
+        progress = Audioinfo.find('#progress');
+        progressInnerBar = Audioinfo.find('#progressInnerBar');
+    }
+
+    //音频初始化
+    (function initAudio() {
+        if (!audioSrc) return false;
+        createAudioDiv();
+        var tkAudioList = Audioinfo.find('audio');
+        if (tkAudioList.length > 0) {
+            for (var i = 0, i1 = tkAudioList.length; i < i1; i++) {
+                tkAudioList[i].remove();
+            }
+        }
+
+        tkAudio = $('<audio>');
+        tkAudio.attr('src',audioSrc);
+        Audioinfo.append(tkAudio);
+        Audioinfo.css('display','block');
+        btnControl.addClass('Pauseing');
+        audio = Audioinfo.find('audio')[0];
+        audio.load();
+
+        if(audioHistory){
+            if(audioSrc === audioHistory.audio_src) {
+                console.log('相同音频');
+                audio.currentTime = parseInt(audioHistory.audio_played);
+                currentTime = audio.currentTime;
+                if(audioHistory.audio_state === 'play') {
+                    playAudio();
+                }
+            }
+            else{
+                console.log('不同音频');
+                currentTime = audio.currentTime;               
+            }
+        }
+        
+        
+        // 音频加载完成事件监听
+        tkAudio.bind("canplaythrough", canPlay);
+
+        btnControl.bind('click', function(e) {
+            e.stopPropagation();
+            if (btnControl.attr('class').indexOf("Playing") > -1) {
+                pauseAudio();//暂停
+            } else {
+                playAudio();//开始播放                
+            }
+        });
+        tkAudio.bind("ended", function () {
+            btnControl.removeClass('Playing');
+            clearInterval(playTimer);
+            audio.currentTime = 0;
+            currentTime = 0;
+            moveScrollbar();
+            refreshTime(currentTime, "currentTime");
+        });
+        function canPlay() {
+            console.log("audio can play");
+            totalTime = audio.duration;
+            refreshTime(totalTime, "totalTime");
+            tkAudio.unbind("canplaythrough", canPlay);
+            // 阻止事件冒泡
+            return false;
+        }
+    })();    
+
+    // 滑动滚动条
+    function moveScrollbar() {
+        var percent = "0";
+        if (totalTime > 0) {
+            percent = currentTime / totalTime;
+        }
+        percent = percent > 1 ? 1 : percent;
+        percent = percent < 0 ? 0 : percent;
+        percent = percent * 100 + "%";
+        progressInnerBar.css('width',percent);
+    }
+
+    // 刷新播放时间
+    function refreshTime(time, timePlaceId) {
+        var timePlace = Audioinfo.find('#' + timePlaceId);
+        time = Math.round(time);
+        //分
+        var minute = time / 60;
+        var minutes = parseInt(minute);
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        //秒
+        var second = time % 60;
+        seconds = parseInt(second);
+        seconds = seconds < 10 ? '0' + seconds : seconds;
+        var allTime = minutes  + ':' + seconds + '';
+        timePlace.text(allTime);
+    }
+
+    // 播放音频     
+    function playAudio() {
+        if(tkAudio && progress) {
+            btnControl.addClass('Playing');
+            audio.play();
+            moveScrollbar();
+            refreshTime(currentTime, "currentTime");
+            playTimer = setInterval(function() {
+                console.log('The audio is playing...')
+                currentTime = audio.currentTime;
+                moveScrollbar();
+                refreshTime(currentTime, "currentTime");
+            }, 1000);
+        }
+    }
+
+    // 暂停音频
+    function pauseAudio() {
+        if(tkAudio && progress) {
+            btnControl.removeClass('Playing');
+            audio.pause();
+            clearInterval(playTimer);
+        }
+    }
+
+    // 停止音频
+    function stopAudio() {
+        if (tkAudio) {
+            // 保存当前音频状态
+            // ----------------
+            var currentAudioStateObj = {
+                audio_src: audio.src,
+                audio_played: audio.currentTime,
+                audio_duration: audio.duration,
+                audio_state:audio.paused ? 'pause' : 'play'
+            }
+            window.localStorage.removeItem('audioHistory', JSON.stringify(currentAudioStateObj));
+            window.localStorage.setItem('audioHistory', JSON.stringify(currentAudioStateObj));
+            // ----------------
+            btnControl.removeClass('Playing');
+            clearInterval(playTimer);
+            audio.pause();
+            audio.currentTime = 0.0;
+            currentTime = 0
+            moveScrollbar();
+            refreshTime(currentTime, "currentTime");
+            Audioinfo.children().remove();
+        }
+    }    
+
+    //点击进度条
+    Audioinfo.find(".ProgressBar").on("click",function(e){
+        setRangeBar(e);
+        e.stopPropagation(e);
+    })
+    
+    //PC拖动进度条滑块
+    Audioinfo.find(".ProgressBar .ProgressPoint .StatusIco").on('mousedown', function(e){
+        setRangeBar(e);
+        e.stopPropagation(e);
+        function relase(){
+            $(window).off("mousemove",setRangeBar);
+            $(window).off("mouseup",relase);
+        }
+        $(window).on("mousemove",setRangeBar);
+        $(window).on("mouseup",relase);
+    });
+
+    //移动端拖动进度条滑块
+    Audioinfo.find(".ProgressBar .ProgressPoint .StatusIco").on("touchstart",function(e) {        
+        e.stopPropagation(e);
+        setRangeBar(e);
+        function relase(){
+            $(window).off("touchmove", setRangeBar);
+            $(window).off("touchend",relase);
+        }
+        $(window).on("touchmove",setRangeBar);
+        $(window).on("touchend",relase);
+    });
+
+    //更新播放器时间和进度条进度
+    function refreshState(currentTime) {        
+        moveScrollbar();
+        refreshTime(currentTime, 'currentTime');
+    } 
+
+    // 拖放设置音频当前时间
+    function setRangeBar(e) {
+        var pointX = e.pageX || e.originalEvent.targetTouches[0].pageX;
+        var objX = progress.offset().left;
+        var runnableTrackWidth = (pointX - objX) / progress.width() * 100;
+        var RangeValue = Math.round(runnableTrackWidth);
+        if(runnableTrackWidth <= 0) {          
+            audio.currentTime = 0; 
+            currentTime = audio.currentTime;
+            refreshState(currentTime);
+        }
+        else if(runnableTrackWidth > 0 && runnableTrackWidth < 100) {
+            audio.currentTime = Math.round(RangeValue / 100 * audio.duration); 
+            currentTime = audio.currentTime;
+            refreshState(currentTime);
+        }
+        else if(runnableTrackWidth >= 100) {
+            audio.currentTime = 100;   
+            currentTime = audio.currentTime;
+            refreshState(currentTime);         
+        }
+        return false;
+    }
+
+    return {
+        playAudio: playAudio,
+        pauseAudio: pauseAudio,
+        stopAudio: stopAudio,
+    }
+    
+}
+// --------------------------------
