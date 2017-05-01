@@ -19,22 +19,29 @@
 		.calendar .calendar-operate {
 			display: flex;
 			flex-direction: row;
-			/*flex-wrap: nowrap;*/
-			/*justify-content: space-between;*/
+			justify-content: space-between;
 			height: 30px;
-			/*font-size: 1em;*/
 		}
-		.calendar .calendar-operate select {
-			/*display: inline-block;*/
-			
+		.calendar .calendar-operate select {			
 			padding: 0 5px;
 			margin-right: 24px;
 			border-radius: 2px; 
+			font-size: 0.8em;
+		}
+		.calendar .calendar-operate button {			
+			padding: 0 5px;
+			border-radius: 2px; 
+			font-size: 0.8em;
 		}
 		.calendar table {
 			width: 100%;
 			height: 100%;
+			margin-top: 5px;
 			border-collapse: collapse;
+		}
+		.calendar tr th {
+			border-top: 1px solid #d9d9d9;
+			padding: 8px;
 		}
 		.calendar tr td {
 			border: 1px solid #d9d9d9;
@@ -44,7 +51,7 @@
 <body>
 	<div class="container">
 		<div class="calendar">
-			<div class="calendar-operate">
+			<!-- <div class="calendar-operate">
 				<select name="cal-year" id="cal-year" class="cal-year">
 					<option value="">2017年</option>
 				</select>
@@ -56,13 +63,7 @@
 			<table>
 				<thead class="calendar-head">
 					<tr>
-						<th>日</th>
-						<th>一</th>
-						<th>二</th>
-						<th>三</th>
-						<th>四</th>
-						<th>五</th>
-						<th>六</th>
+						<th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th>
 					</tr>
 				</thead>
 				<tbody class="calendar-body">
@@ -121,8 +122,53 @@
 						<td></td>
 					</tr>
 				</tbody>
-			</table>
+			</table> -->
 		</div>
 	</div>
+	<script>
+		class Calendar {
+			constructor(year, month) {
+				this._year = year;
+				this._month = month;
+			}
+			isLeapYear() {
+				return this._year % 4 ===0 && this._year % 100 !== 0 || this._year % 400 ===0 ? true : false;
+			}
+			getMonthDays() {
+				let months = [31, 28 + this.isLeapYear(this._year), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+				return months[this._month - 1];
+			}
+			getFirstDay() {
+				let date = new Date(this._year + '-' + this._month + '-1');
+				return date.getDay();
+			}
+		}
+		let calendarEl = document.querySelector('.calendar');
+		let calendarHtml = '';
+		calendarHtml += '<div class="calendar-operate">';
+		calendarHtml += '	<select name="cal-year" id="cal-year" class="cal-year"></select>';
+		calendarHtml += '	<select name="cal-month" id="cal-month" class="cal-month"></select>';
+		calendarHtml += '	<button type="button" id="cal-today" class="can-today">今天</button>';
+		calendarHtml += '</div>';
+		calendarHtml += '<table>';
+		calendarHtml += '	<thead class="calendar-head">';
+		calendarHtml += '		<tr>';
+		calendarHtml += '			<th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th>';
+		calendarHtml += '		</tr>';
+		calendarHtml += '	</thead>';
+		calendarHtml += '	<tbody class="calendar-body"></tbody>';
+		calendarHtml += '</table>';
+		calendarEl.innerHTML = calendarHtml;
+		let c = new Calendar(2016, 2);
+		console.log(c.isLeapYear());
+		console.log(c.getFirstDay());
+		console.log(c.getMonthDays());
+		// var date = new Date('2017-5-9');
+		// console.log('The Date is 2017-5-9');
+		// console.log('getDate(1~31): ' + date.getDate());
+		// console.log('getDay (0~6): ' + date.getDay());
+		// console.log('getMonth(0~11): ' + date.getMonth());
+		// console.log('getFullYear: ' + date.getFullYear());
+	</script>
 </body>
 </html>
