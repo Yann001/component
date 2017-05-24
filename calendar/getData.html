@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    var res = `{"errorno":0,"errmsg":"",
+    "data":{
+      "2017-05":{
+        "2017-05-01":{
+          "click_cost_dianjing":"723.96000",
+          "click_cost_mv":"80004.00000"
+        },
+        "2017-05-02":{
+          "click_cost_dianjing":"723.96000",
+          "click_cost_mv":"80004.00000",
+          "click_cost_all":"747.21000"
+        },
+        "2017-05-03":{
+          "click_cost_dianjing":"723.96000",
+          "click_cost_mv":"80004.00000",
+          "click_cost_all":"747.21000"
+        },
+        "2017-05-04":{
+          "click_cost_dianjing":"723.96000",
+          "click_cost_mv":"80004.00000",
+          "click_cost_all":"747.21000"
+        },
+        "2017-05-05":{
+          "click_cost_dianjing":"723.96000",
+          "click_cost_mv":"80004.00000",
+          "click_cost_all":"747.21000"
+        },
+        "2017-05-06":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"},"2017-05-07":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"},"2017-05-08":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"},"2017-05-09":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"},"2017-05-10":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"},"2017-05-11":{"click_cost_dianjing":"723.96000","click_cost_mv":"80004.00000","click_cost_all":"747.21000"}}}}`
+    // 上面懒得换行了，就让它一行吧！！！
+    res = JSON.parse(res);
+    var data = res.data;
+    var arr = [];
+    for (var month in data) {
+      // console.log(month);
+      for (var day in data[month]) {
+        // console.log(day)
+        arr.push({
+          date: day,
+          data:data[month][day]
+        })
+      }
+    }
+    // console.log(arr)
+    // 方法一，解析成数组
+    var getData1 = function(year, month, arr) {
+      console.log('法一：');
+      for (var i = 0; i < arr.length; i++) {
+        console.log(arr[i].date, 
+        arr[i].data.click_cost_dianjing,
+        arr[i].data.click_cost_mv,
+        arr[i].data.click_cost_all)
+      }
+    }(2017,5,arr);
+    // 方法二，直接读取对象
+    var getData2 = function (year, month, data) {
+      var month = month < 10 ? '0' + month : month;
+      var day = day < 10 ? '0' + day : day;
+      var key = year + '-' + month;
+      console.log('法二：');
+      for (var month in data) {
+        if (month == key) {
+          for (var day in data[month]) {
+            console.log(day,
+            data[month][day].click_cost_dianjing,
+            data[month][day].click_cost_mv,
+            data[month][day].click_cost_all);
+          }
+        }
+      }
+    }(2017,5,data);
+  </script>
+</body>
+</html>
