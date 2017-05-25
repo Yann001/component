@@ -27,14 +27,24 @@
     }
 
     .calendar .calendar-operate select {
+      cursor: pointer;
       padding: 0 5px;
       margin-right: 24px;
       border-radius: 2px;
       font-size: 0.8em;
     }
 
-    .calendar .calendar-operate button {
-      padding: 0 5px;
+    .calendar .calendar-operate select option {
+      cursor: pointer;
+    }
+
+    .calendar .calendar-operate a {
+      text-decoration: none;
+      line-height: 30px;
+      color: black;
+      border: 1px solid #a9a9a9;
+      padding-left: 10px;
+      padding-right: 10px;
       border-radius: 2px;
       font-size: 0.8em;
     }
@@ -52,87 +62,19 @@
     }
 
     .calendar tr td {
+      text-align: center;
       border: 1px solid #d9d9d9;
+    }
+
+    .calendar tr td:not(.cur-month-day) {
+      opacity: 0.5;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="calendar">
-      <!-- <div class="calendar-operate">
-        <select name="cal-year" id="cal-year" class="cal-year">
-          <option value="">2017年</option>
-        </select>
-        <select name="cal-month" id="cal-month" class="cal-month">
-          <option value="">5月</option>
-        </select>
-        <button type="button" id="cal-today" class="can-today">今天</button>
-      </div>
-      <table>
-        <thead class="calendar-head">
-          <tr>
-            <th>日</th><th>一</th><th>二</th><th>三</th><th>四</th><th>五</th><th>六</th>
-          </tr>
-        </thead>
-        <tbody class="calendar-body">
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table> -->
-    </div>
+    <div class="calendar"></div>
   </div>
   <script>
     class Calendar {
@@ -199,7 +141,7 @@
         calendarHtml += '<div class="calendar-operate" id="calendar-operate">';
         calendarHtml += '	<select name="cal-year" id="cal-year" class="cal-year"></select>';
         calendarHtml += '	<select name="cal-month" id="cal-month" class="cal-month"></select>';
-        calendarHtml += '	<button type="button" id="cal-today" class="cal-today">今天</button>';
+        calendarHtml += '	<a href="javascript:void(0)" id="cal-today" class="cal-today">今天</a>';
         calendarHtml += '</div>';
         calendarHtml += '<table>';
         calendarHtml += '	<thead class="calendar-head">';
@@ -225,18 +167,8 @@
           monthOption.innerText = month + '月';
           monthSelect.appendChild(monthOption);
         }
-        for (let i = 0, len = yearSelect.options.length; i < len; i++) {
-          if (yearSelect.options[i].value == year) {
-            yearSelect.options[i].selected = true;
-            break;
-          }
-        }
-        for (let i = 0, len = monthSelect.options.length; i < len; i++) {
-          if (monthSelect.options[i].value == month) {
-            monthSelect.options[i].selected = true;
-            break;
-          }
-        }
+        setSelected(yearSelect, year);
+        setSelected(monthSelect, month);
         this.createCalTable();
         yearSelect.addEventListener('change', () => {
           let month = monthSelect.value;
@@ -250,8 +182,20 @@
         });
         todayButton.addEventListener('click', () => {
           let date = new Date();
-          this.createCalTable(date.getMonth() + 1, date.getFullYear());
+          let year = date.getFullYear();
+          let month = date.getMonth() + 1;
+          setSelected(yearSelect, year);
+          setSelected(monthSelect, month);
+          this.createCalTable(month, year);
         });
+        function setSelected(select, selectedValue) {
+          for (let i = 0, len = select.options.length; i < len; i++) {
+            if (select.options[i].value == selectedValue) {
+              select.options[i].selected = true;
+              return;
+            }
+          }
+        }
       }
     }
     let calendar = new Calendar();
