@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .video-box {
+      width: 320px;
+      height: 240px;
+    }
+
+    .video-box video {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="video-box">
+      <video src="test.mp4" id='test-video'></video>
+      <!--<video src="http://videofms.100xuexi.com/quanguoerjijianzaoshikaoshi/nianjianshegongchengshigongguanlizhentijiexiban/9013nian/VideoC/90130109_113202/fc5537578bccaebf3d80fbce2374f70f.mp4" id='test-video'></video>-->
+    </div>
+  </div>
+  <script>
+    var videoPlayer = function () {
+      var videoEl = document.getElementById('test-video');
+      videoPlayer.prototype.init = function () {
+        createEl();
+        var playBtn = document.getElementById('vp-play-btn');
+        var pauseBtn = document.getElementById('vp-pause-btn');
+        var fullscreenBtn = document.getElementById('vp-fullscreen-btn');
+        var exitFullscreenBtn = document.getElementById('vp-exit-fullscreen-btn');
+        registerEvent(playBtn, 'click', function () {
+          videoEl.play();
+        });
+        registerEvent(pauseBtn, 'click', function () {
+          videoEl.pause();
+        });
+        registerEvent(fullscreenBtn, 'click', function () {
+          enterFullscreen(videoEl);
+        });
+        registerEvent(exitFullscreenBtn, 'click', function () {
+          exitFullscreen(videoEl);
+        });
+        function createEl() {
+          var controlBar = document.createElement('div');
+          setAttr(controlBar, {
+            'id': 'vp-ctrl-bar',
+            'class': 'vp-ctrl-bar'
+          })
+          var playBtn = document.createElement('button');
+          setAttr(playBtn, {
+            'id': 'vp-play-btn',
+            'class': 'vp-play-btn'
+          })
+          playBtn.innerText = '播放';
+          var pauseBtn = document.createElement('button');
+          setAttr(pauseBtn, {
+            'id': 'vp-pause-btn',
+            'class': 'vp-pause-btn'
+          })
+          pauseBtn.innerText = '暂停';
+          var fullscreenBtn = document.createElement('button');
+          setAttr(fullscreenBtn, {
+            'id': 'vp-fullscreen-btn',
+            'class': 'vp-fullscreen-btn'
+          })
+          fullscreenBtn.innerText = '全屏';
+          var exitFullscreenBtn = document.createElement('button');
+          setAttr(exitFullscreenBtn, {
+            'id': 'vp-exit-fullscreen-btn',
+            'class': 'vp-exitf-fullscreen-btn'
+          })
+          exitFullscreenBtn.innerText = '退出全屏';
+          controlBar.appendChild(playBtn);
+          controlBar.appendChild(pauseBtn);
+          controlBar.appendChild(fullscreenBtn);
+          controlBar.appendChild(exitFullscreenBtn);
+          videoEl.parentNode.appendChild(controlBar);
+        }
+
+      };
+
+      function setAttr(el, obj) {
+        for (var key in obj) {
+          el.setAttribute(key, obj[key]);
+        }
+      }
+      function registerEvent(el, type, fn) {
+        if (window.addEventListener) {
+          el.addEventListener(type, fn);
+        } else if (window.attachEvent) {
+          el.attachEvent("on" + type, fn);
+        }
+      }
+      //进入全屏
+      function enterFullscreen(element) {
+        //此方法不可以在异步任务中执行，否则火狐无法全屏
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        } else if (element.oRequestFullscreen) {
+          element.oRequestFullscreen();
+        } else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullScreen();
+        } else {
+          var docHtml = document.documentElement;
+          var docBody = document.body;
+          var videobox = document.getElementById('video-box');
+          var cssText = 'width:100%;height:100%;overflow:hidden;';
+          docHtml.style.cssText = cssText;
+          docBody.style.cssText = cssText;
+          videobox.style.cssText = cssText + ';' + 'margin:0px;padding:0px;';
+          document.IsFullScreen = true;
+        }
+      }
+      //退出全屏
+      function exitFullscreen() {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.oRequestFullscreen) {
+          document.oCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else {
+          var docHtml = document.documentElement;
+          var docBody = document.body;
+          var videobox = document.getElementById('video-box');
+          docHtml.style.cssText = "";
+          docBody.style.cssText = "";
+          videobox.style.cssText = "";
+          document.IsFullScreen = false;
+        }
+      }
+    }
+    var player = new videoPlayer();
+    player.init();
+  </script>
+</body>
+
+</html>
